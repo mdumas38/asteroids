@@ -7,6 +7,18 @@ from asteroidfield import AsteroidField
 from circleshape import CircleShape
 from shot import Shot
 
+class Score:
+    def __init__(self):
+        self.score = 0
+        self.font = pygame.font.Font(None, 36)
+        
+    def add_points(self, points):
+        self.score += points
+        
+    def draw(self, screen):
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -28,6 +40,7 @@ def main():
 
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    score = Score()
 
     while True:
         for event in pygame.event.get():
@@ -43,6 +56,8 @@ def main():
             for bullet in shots:
                 if bullet.collides_with(asteroid):
                     bullet.kill()
+                    points = int(100 - asteroid.radius) * 10  # Larger asteroids = fewer points
+                    score.add_points(max(points, 10))
                     asteroid.split()
 
         screen.fill("black")
@@ -50,6 +65,7 @@ def main():
         for obj in drawable:
             obj.draw(screen)
 
+        score.draw(screen)
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
